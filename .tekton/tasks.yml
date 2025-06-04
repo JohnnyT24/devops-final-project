@@ -1,0 +1,33 @@
+- apiVersion: tekton.dev/v1beta1
+  kind: Task
+  metadata:
+    name: nose-test-task
+  spec:
+    description: |
+      This Tekton task installs the nose test framework and runs unit tests in the 'tests/' directory.
+    steps:
+      - name: install-nose
+        image: python:3.9
+        script: |
+          pip install nose
+      - name: run-tests
+        image: python:3.9
+        script: |
+          cd /workspace/source
+          nosetests tests/
+
+---
+- apiVersion: tekton.dev/v1beta1
+  kind: Task
+  metadata:
+    name: cleanup-task
+  spec:
+    description: |
+      A simple cleanup task that removes temporary files from /tmp.
+    steps:
+      - name: cleanup
+        image: alpine
+        script: |
+          #!/bin/sh
+          echo "Cleaning up temporary files..."
+          rm -rf /tmp/*
